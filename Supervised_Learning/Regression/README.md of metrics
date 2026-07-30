@@ -1,1 +1,73 @@
 
+# 📊 Day 49: Regression Metrics & Feature Selection Analysis
+
+This module covers the comprehensive analysis of **Regression Evaluation Metrics**, focusing on how different metrics react to feature additions and why **Adjusted $R^2$** is crucial for multi-variable models.
+
+---
+
+## 🎯 Key Concepts Covered
+
+### 1. Primary Evaluation Metrics
+* **MAE (Mean Absolute Error):** Measures the average magnitude of absolute errors. Linear penalty; robust to outliers.
+* **MSE (Mean Squared Error):** Squares the errors before averaging. Heavily punishes large errors/outliers.
+* **RMSE (Root Mean Squared Error):** Takes the square root of MSE $(\sqrt{\text{MSE}})$ to return units back to the original target scale.
+* **$R^2$ Score (Coefficient of Determination):** Represents the proportion of variance explained by the model compared to a mean baseline model.
+
+---
+
+## 🔬 Practical Experiments & Analysis
+
+Using a linear regression model predicting student packages based on CGPA and additional features, we conducted experiments to observe metric behavior:
+
+### Baseline Model (Single Feature: `cgpa`)
+* **Input Feature:** `cgpa`
+* **Target:** `package`
+* **Metrics:**
+  * **MAE:** `~0.288`
+  * **MSE:** `~0.121`
+  * **RMSE:** `~0.348`
+  * **$R^2$ Score:** `0.7807`
+  * **Adjusted $R^2$ Score:** `0.7749`
+
+---
+
+### Experiment 1: Adding a Useless Feature (`random_feature`)
+Added an un-correlated random column to test metric sensitivity.
+
+* **$R^2$ Score:** `0.7811` ⬆️ *(Artificially increased!)*
+* **Adjusted $R^2$ Score:** `0.7693` ⬇️ *(Correctly dropped due to penalty)*
+
+> 💡 **Takeaway:** $R^2$ can fraudulently increase when non-informative features are added. Adjusted $R^2$ applies a penalty term based on the number of features ($k$) and correctly decreases when a feature provides no real value.
+
+---
+
+### Experiment 2: Adding a Useful Feature (`iq`)
+Added a engineered feature (`iq`) strongly correlated with the target variable.
+
+* **$R^2$ Score:** `0.8000` ⬆️
+* **Adjusted $R^2$ Score:** `0.7892` ⬆️
+
+> 💡 **Takeaway:** When a newly added feature adds genuine explanatory power, the increase in predictive performance overcomes the feature penalty, causing **both** $R^2$ and Adjusted $R^2$ to rise.
+
+---
+
+## 📐 Mathematical Formulation: Adjusted $R^2$
+
+$$\text{Adjusted } R^2 = 1 - \frac{(1 - R^2)(n - 1)}{n - k - 1}$$
+
+Where:
+* $n$ = Total number of observations (samples)
+* $k$ = Total number of independent predictors (features)
+
+The denominator term **$(n - k - 1)$** decreases as $k$ increases, penalizing unnecessary feature growth unless offset by a significant reduction in $(1 - R^2)$.
+
+---
+
+## 🛠️ Summary Matrix
+
+| Metric | Primary Focus | Feature Penalty? | Best Used For |
+| :--- | :--- | :--- | :--- |
+| **MAE** | Absolute Magnitude | ❌ No | Outlier-heavy datasets |
+| **MSE / RMSE** | Squaring Large Errors | ❌ No | Penalizing large mistakes |
+| **$R^2$** | Goodness of Fit | ❌ No | Single feature benchmarking |
+| **Adjusted $R^2$** | Model Parsimony | ✅ Yes | Multi-feature selection / Model evaluation |
